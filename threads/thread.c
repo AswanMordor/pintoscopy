@@ -187,7 +187,12 @@ thread_create (const char *name, int priority,
   kf = alloc_frame (t, sizeof *kf);
   kf->eip = NULL;
   kf->function = function;
-  kf->aux = aux;
+
+  /*Set semaphore and real aux params*/
+  struct auxiliary_sem* aux_sem = (struct auxiliary_sem*)aux;
+  sema_init(&(t->parent_sem),0);
+  aux_sem->child_thread = t;
+  kf->aux = aux_sem->args;
 
   /* Stack frame for switch_entry(). */
   ef = alloc_frame (t, sizeof *ef);
